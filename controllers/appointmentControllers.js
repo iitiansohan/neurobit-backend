@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import doc from '../../src/assets/doctors.js';
+import doc from "../assets/doctor.js";
 import Booking from '../models/BookingSchema.js';
 
 // @Desc: Handles appointment booking and sends an email notification

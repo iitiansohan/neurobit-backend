@@ -1,4 +1,5 @@
 import Doctor from "../models/DoctorSchema.js";
+import doc from "../assets/doctor.js";
 import Booking from "../models/BookingSchema.js";
 
 // ✅ Update Doctor

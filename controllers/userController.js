@@ -1,7 +1,7 @@
 import User from "../models/UserSchema.js";
 import Booking from "../models/BookingSchema.js";
 import Doctor from "../models/DoctorSchema.js";
-import doc from "../../src/assets/doctors.js";
+import doc from "../assets/doctor.js";
 
 export const updateUser = async (req, res) => {
     const id = req.params.id;
