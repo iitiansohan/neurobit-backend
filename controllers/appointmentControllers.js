@@ -1,51 +1,47 @@
-import nodemailer from 'nodemailer'
+import nodemailer from 'nodemailer';
 import doc from '../../src/assets/doctors.js';
 import Booking from '../models/BookingSchema.js';
-import Doctor from '../models/DoctorSchema.js';
 
-
-//@Desc:-  Handles the booking of an appointment between a patient and a doctor, and sends an email notification to the doctor using Nodemailer
+// @Desc: Handles appointment booking and sends an email notification
 export const bookAppointment = async (req, res) => {
-    const { userId, doctorId, appointmentTime } = req.body;
+  const { userId, doctorId, appointmentTime } = req.body;
 
-    try {
-        // Find the selected doctor from the hardcoded list
-        const selectedDoctor = doc.find((doctor) => doctor._id === doctorId);
-        console.log(selectedDoctor.email)
-        if (!selectedDoctor) {
-            return res.status(404).json({ success: false, message: 'Doctor not found.' });
-        }
+  try {
+    //Find doctor from hardcoded list
+    const selectedDoctor = doc.find((doctor) => doctor._id === doctorId);
 
-        // Send email to the selected doctor
-        const transporter = nodemailer.createTransport({
-            service: 'gmail', // e.g., 'gmail'
-            auth: {
-                user: 'prakharsrvstv14@gmail.com',
-                pass: 'tkwa qpqe kwcv excx',
-            },
-        });
-
-        const mailOptions = {
-            from: 'prakharsrvstv14@gmail.com',
-            to: selectedDoctor.email,
-            subject: 'New Appointment Booking',
-            text: `Dear ${selectedDoctor.name},\n\nYou have a new appointment scheduled this ${appointmentTime}.\n\nRegards,\nMediCALL:Your Telemedicine Platform`,
-        };
-
-        await transporter.sendMail(mailOptions);
-        const appointment = new Booking({
-            userID:userId,
-            doctorID:doctorId,
-            appointmentDate:appointmentTime,
-        });
-
-        await appointment.save();
-
-        res.status(200).json({ success: true, message: 'Appointment booked successfully.' });
-    } catch (error) {
-        console.error('Error booking appointment:', error);
-        res.status(500).json({ success: false, message: 'Error booking appointment.' });
+    if (!selectedDoctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found.' });
     }
 
+    //Setting up email transporter
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.SMTP_EMAIL,
+        pass: process.env.SMTP_PASS,
+      },
+    });
 
+    //Email content
+    const mailOptions = {
+      from: process.env.SMTP_EMAIL,
+      to: selectedDoctor.email,
+      subject: 'New Appointment Booking',
+      text: `Dear ${selectedDoctor.name},\n\nYou have a new appointment scheduled at ${appointmentTime}.\n\nRegards,\nNeurobit: Your Telemedicine Platform`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    await Booking.create({
+      userID: userId,
+      doctorID: doctorId,
+      appointmentDate: appointmentTime,
+    });
+
+    res.status(200).json({ success: true, message: 'Appointment booked successfully.' });
+  } catch (error) {
+    console.error('Error booking appointment:', error);
+    res.status(500).json({ success: false, message: 'Error booking appointment.' });
+  }
 };
