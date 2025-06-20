@@ -4,9 +4,9 @@ import Booking from '../models/BookingSchema.js';
 
 // @Desc: Handles appointment booking and sends an email notification
 export const bookAppointment = async (req, res) => {
-  // const userId = req.userId;
+  const userId = req.userId;
 
-  const { userId, doctorId, appointmentTime } = req.body;
+  const { doctorId, appointmentTime } = req.body;
 
   try {
     //Find doctor from hardcoded list
